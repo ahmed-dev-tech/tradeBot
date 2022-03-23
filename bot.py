@@ -4,8 +4,7 @@ import config
 from binance.client import Client
 from binance.enums import *
 import telebot
-TELE_API_KEY = os.getenv('API_KEY')
-bot = telebot.TeleBot(TELE_API_KEY)
+
 
 # self.RSI_PERIOD = 14
 # RSI_OVERBOUGHT = 70
@@ -26,7 +25,9 @@ class Bot():
         self.STREAM_DURATION=STREAM_DURATION
         self.TRADE_QUANTITY=TRADE_QUANTITY
         self.TRADE_SYMBOL=TRADE_SYMBOL
+    TELE_API_KEY = os.getenv('API_KEY')
     SOCKET = "wss://stream.binance.com:9443/ws/{self.STREAM_SYMBOL}@kline_{self.STREAM_DURATION}"
+    bot = telebot.TeleBot(TELE_API_KEY)
     def order(self,side, quantity, symbol,order_type=ORDER_TYPE_MARKET):
         try:
             print("sending order")
@@ -39,7 +40,7 @@ class Bot():
 
     def on_open(self,ws):
         print('opened connection')
-
+    
     def on_close(self,ws):
         print('closed connection')
 
@@ -76,7 +77,7 @@ class Bot():
                         @bot.message_handler(func=order_succeeded)                   
                         def sendSellSignal(message):
                             bot.send_message(message.chat.id, "Sell {self.TRADE_SYMBOL}")
-
+                        return "Sell Sucessfull"
                     else:
                         print("It is overbought, but we don't own any. Nothing to do.")
                 
@@ -93,6 +94,7 @@ class Bot():
                         @bot.message_handler(func=order_succeeded)                   
                         def sendBuySignal(message):
                             bot.send_message(message.chat.id, "BUY {self.TRADE_SYMBOL}")
+                        return "Buy Sucessful"
     bot.polling()
     ws = websocket.WebSocketApp(SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
     ws.run_forever()

@@ -7,26 +7,29 @@ import bot
 app = Flask(__name__)
 app.secret_key = b'somelongrandomstring'
 
-# client = Client(config.API_KEY, config.API_SECRET, tld='us')
+client = Client(config.API_KEY, config.API_SECRET, tld='us')
 #Bot Params
-# STREAM_SYMBOL=request.form['symbol']
-# TRADE_SYMBOL=request.form['trade_symbol']
-# TRADE_QUANTITY=request.form['quantity']
-# RSI_PERIOD=request.form['rsi_length']
-# RSI_OVERBOUGHT= request.form['rsi_overbought']
-# RSI_OVERSOLD= request.form['rsi_oversold']
-# STREAM_DURATION = request.form['steam_duration']
+STREAM_SYMBOL=request.form['symbol']
+TRADE_SYMBOL=request.form['trade_symbol']
+TRADE_QUANTITY=request.form['quantity']
+RSI_PERIOD=request.form['rsi_length']
+RSI_OVERBOUGHT= request.form['rsi_overbought']
+RSI_OVERSOLD= request.form['rsi_oversold']
+STREAM_DURATION = request.form['steam_duration']
 #Bot init
-# RsiBot = bot.Bot(RSI_PERIOD,RSI_OVERBOUGHT,RSI_OVERSOLD,STREAM_SYMBOL,STREAM_DURATION,TRADE_QUANTITY,TRADE_SYMBOL)
+RsiBot = bot.Bot(RSI_PERIOD,RSI_OVERBOUGHT,RSI_OVERSOLD,STREAM_SYMBOL,STREAM_DURATION,TRADE_QUANTITY,TRADE_SYMBOL)
 @app.route('/')
 def index():
     title = 'BotView'
-    
+    if RsiBot.onmessage()=='Sell Sucessfull':
+        action = "bought {TRADE_SYMBOL}"
+    else:
+        action = "Sell {TRADE_SYMBOL}"
     # account = client.get_account()
     # balances = account['balances']
     # exchange_info = client.get_exchange_info()
     # symbols = exchange_info['symbols']
-    return render_template('index.html', title=title)
+    return render_template('index.html', title=title, action=action)
 
 # @app.route('/buy', methods=['POST'])
 # def buy():
@@ -40,16 +43,6 @@ def index():
 #     except Exception as e:
 #         flash(e.message, "error")
 #     return None #returns suc
-
-
-# @app.route('/sell')
-# def sell():
-#     return 'sell'
-
-
-# @app.route('/settings')
-# def settings():
-#     return 'settings'
 
 @app.route('/history')
 def history():
