@@ -21,15 +21,15 @@ RsiBot = bot.Bot(RSI_PERIOD,RSI_OVERBOUGHT,RSI_OVERSOLD,STREAM_SYMBOL,STREAM_DUR
 @app.route('/')
 def index():
     title = 'BotView'
+    account = client.get_account()
+    balances = account['balances']
+    exchange_info = client.get_exchange_info()
+    symbols = exchange_info['symbols']
     if RsiBot.onmessage()=='Sell Sucessfull':
         action = "bought {TRADE_SYMBOL}"
     else:
         action = "Sell {TRADE_SYMBOL}"
-    # account = client.get_account()
-    # balances = account['balances']
-    # exchange_info = client.get_exchange_info()
-    # symbols = exchange_info['symbols']
-    return render_template('index.html', title=title, action=action)
+    return render_template('index.html', title=title, my_balances=balances, symbols=symbols, action=action)
 
 # @app.route('/buy', methods=['POST'])
 # def buy():
@@ -46,7 +46,7 @@ def index():
 
 @app.route('/history')
 def history():
-    candlesticks = client.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_15MINUTE, "1 Jul, 2020", "12 Jul, 2020")
+    candlesticks = client.get_historical_klines("{STREAM_SYMBOL}", Client.KLINE_INTERVAL_15MINUTE, "1 Jul, 2020", "12 Jul, 2020")
     processed_candlesticks = []
     for data in candlesticks:
         candlestick = { 
